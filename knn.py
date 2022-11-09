@@ -4,18 +4,25 @@ import ipdb
 
 def knn(train_xs, train_cs, test_xs, test_cs):
     centroids = []
+    k = len(np.unique(train_cs))
     for c in np.unique(train_cs):
         mask = train_cs == c
         c_xs = train_xs[mask]
         mean_c_xs = np.mean(c_xs, axis=0)
         centroids.append(mean_c_xs)
     centroids = np.array(centroids)
-    # distances = np.array([(test_xs - centroid) ** 2 for centroid in centroids]).mean(
-    #     axis=-1
+    distances = np.array([(test_xs - centroid) ** 2 for centroid in centroids]).mean(
+        axis=-1
+    )
+    # c = centroids.repeat(test_xs.shape[0], axis=0).reshape(
+    #     test_xs.shape[0], k, test_xs.shape[1]
     # )
-    c = centroids.repeat(200, axis=0).reshape(200, 3, 4)
-    x = test_xs.repeat(3, axis=0).reshape(3, 200, 4).transpose(1, 0, 2)
-    distances = ((c - x) ** 2).mean(axis=-1).T
+    # x = (
+    #     test_xs.repeat(3, axis=0)
+    #     .reshape(k, test_xs.shape[0], test_xs.shape[1])
+    #     .transpose(1, 0, 2)
+    # )
+    # distances = ((c - x) ** 2).mean(axis=-1).T
     predicted_labes = distances.argmin(axis=0)
     # predicted_labes = []
     # for d in distances.T:
@@ -33,8 +40,13 @@ def knn(train_xs, train_cs, test_xs, test_cs):
 
 
 def main():
-    xs = np.random.rand(1000, 4)
-    cs = np.random.randint(0, 3, (1000,))
+    a = np.random.multivariate_normal([0, 0], [[0.2, 0], [0, 0.22]], 1000)
+    b = np.random.multivariate_normal([2, 2], [[0.2, 0], [0, 0.22]], 1000)
+    c = np.random.multivariate_normal([-2, -2], [[0.2, 0], [0, 0.22]], 1000)
+    xs = np.concatenate((a, b, c), axis=0)
+    cs = np.concatenate((np.zeros(1000), np.ones(1000), np.ones(1000) + 1))
+    # tot_xs = []
+    # for i in range(3):
     # suddivide i dati in train e test (80% train, 20% test)
     # (assiemen non li avevamo suddivisi)
     train_len = int(len(xs) * 0.8)
