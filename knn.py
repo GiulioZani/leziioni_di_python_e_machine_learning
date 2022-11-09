@@ -9,6 +9,7 @@ def knn(train_xs, train_cs, test_xs, test_cs):
         mean_c_xs = np.mean(c_xs, axis=0)
         # aggiunge i centroidi alla lista
 
+    # nuovo commento
     # per ogni test_xs, calcola la distanza euclidea
     # con tutti i centroidi e sceglie il più vicino
     # questa sara' la classe predetta
