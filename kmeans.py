@@ -7,14 +7,25 @@ def kmeans(data, k: int):
     # indices = np.random.randint(0, len(data), k)
     indices = np.random.choice(len(data), k, replace=False)
     centroids = data[indices]
-    distances = np.array([(data - centroid) ** 2 for centroid in centroids]).mean(
-        axis=-1
-    )
-    assigned_centroids = np.argmin(distances, axis=0)
-    new_centroids = np.array([data[assigned_centroids == i] for i in range(k)]).mean()
+    centroids_distance = 1
+    i = 0
+    while centroids_distance > 0.0:
+        print(f"{i=}")
+        distances = np.array([(data - centroid) ** 2 for centroid in centroids]).mean(
+            axis=-1
+        )
+        assigned_centroids = np.argmin(distances, axis=0)
+        new_centroids = np.array(
+            [data[assigned_centroids == i].mean(axis=0) for i in range(k)]
+        )
+        centroids_distance = np.array((new_centroids - centroids) ** 2).mean()
+        centroids = new_centroids
+        i += 1
+
+    return centroids
 
 
-def generate_data(size: int, k: int):
+def generate_data(size: int, k: int):  # genera dati di lunghezza size*k
     return np.concatenate(
         [
             np.random.multivariate_normal(
@@ -30,9 +41,10 @@ def generate_data(size: int, k: int):
 def main():
     k = 4
     data = generate_data(1000, k)
+    centroids = kmeans(data, k)
     plt.scatter(*data.T)
+    plt.scatter(*centroids.T)
     plt.savefig("plot.png")
-    final_centroids = kmeans(data, k)
 
 
 if __name__ == "__main__":
